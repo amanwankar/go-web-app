@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Verify Go Version
+        run: go version
+
+      - name: Download Dependencies
+        run: go mod download
+
+      - name: Verify Dependencies
+        run: go mod verify
+
+      - name: Build Application
+        run: go build -o go-web-app .
+
+      - name: Run Unit Tests
+        run: go test -v ./...
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-web-app
+          path: go-web-app
